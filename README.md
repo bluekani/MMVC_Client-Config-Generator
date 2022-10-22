@@ -1,5 +1,5 @@
 # MMVC_Client-Config-Generator
-A GUI configuration file generator for MMVC_Client (unofficial)
+A GUI configuration file generator for MMVC_Client (unofficial)  
 MMVC_Client向けGUI設定ファイル生成ツール(非公式)
 
 ![MMVC_Client_confgen_v0010](https://user-images.githubusercontent.com/24561326/197327727-7f3bad5a-4658-4358-aec7-4f50d7cf5f87.PNG)
