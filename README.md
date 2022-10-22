@@ -20,8 +20,8 @@ pip install PySide6 qt-material
 
 2. `mmvc_client_config_generator.pyw`をMMVC_Clientの**output_audio_device_list.exe**と同じディレクトリにコピー  
 
-3. `mmvc_client_config_generator.pyw`をダブルクリックして実行(自動で同じディレクトリにある**myprofile_.conf**が読み込まれます)  
-  もしくはロードしたい設定ファイルを**pyw**ファイルにドラッグ&ドロップします
+3. `mmvc_client_config_generator.pyw`をダブルクリックして実行(自動で同じディレクトリにある**myprofile.conf**が読み込まれます)  
+  もしくはロードしたい設定ファイル(.conf)を**pyw**ファイルにドラッグ&ドロップします
 
 ## Features
 詳しい設定内容はこちらをご確認ください。  
