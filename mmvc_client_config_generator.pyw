@@ -119,8 +119,9 @@ class CustomQSpinBox(QSpinBox):
 
 #Label，LineEditでファイル選択のレイアウトを作成
 class CreateFileOpenLayout(QHBoxLayout):
-    def __init__(self, label_text, label_width, parent=None):
+    def __init__(self, label_text, label_width, file_filter=None, parent=None):
         self.__cbf_pointer = None
+        self.file_filter = file_filter
 
         QHBoxLayout.__init__(self, parent)
         self.label = QLabel(parent)
@@ -137,8 +138,8 @@ class CreateFileOpenLayout(QHBoxLayout):
         self.addWidget(self.button1, 0,alignment=(Qt.AlignRight))
 
     def get_path(self):
-        dir_ = MainWindow.OpenFile(self, f'Select a {self.label.text()}:', f'{self.line_edit.text()}')
-        #dir_ = QFileDialog().getOpenFileName(None, f'Select a {self.label.text()}:', f'{self.line_edit.text()}')
+        dir_ = MainWindow.OpenFile(self, f'Select a {self.label.text()}:', f'{self.line_edit.text()}', self.file_filter)
+
         print(dir_[0])
         if len(dir_[0]) != 0:
             self.line_edit.setText(f"{fix_path_for_windows(dir_[0])}")
@@ -187,10 +188,10 @@ class MainWindow(QWidget):
         self.vbox_exfile_path = QVBoxLayout()
         self.main_grid.addLayout(self.vbox_exfile_path, 0, 0)
 
-        self.path_config = CreateFileOpenLayout("Config File", 70)
+        self.path_config = CreateFileOpenLayout("Config File", 70, "Client User Profile (*.conf)")
         self.path_config.setCallbackFunc(self.LoadJsonData)
         self.vbox_exfile_path.addLayout(self.path_config, 0)
-        self.path_client = CreateFileOpenLayout("MMVC Client", 70)
+        self.path_client = CreateFileOpenLayout("MMVC Client", 70, "MMVC Client (*.exe)")
         self.vbox_exfile_path.addLayout(self.path_client, 0)
 
         #メイングリッドの(0, 1) ConfigとClientのボタンを格納するVBoxを作成
@@ -199,7 +200,7 @@ class MainWindow(QWidget):
 
         self.btn_save_json = QPushButton("名前を付けて設定ファイルを保存")
         self.btn_save_json.clicked.connect(\
-            lambda: MainWindow.SaveConfigFile(self, self.path_config.line_edit.text(), self.path_config.line_edit.setText)\
+            lambda: MainWindow.SaveConfigFile(self, self.path_config.line_edit.text(), self.path_config.line_edit.setText, "MMVC Client Config File (*.conf)")\
         )
         self.vbox_start_btn.addWidget(self.btn_save_json, 0)
 
@@ -251,15 +252,15 @@ class MainWindow(QWidget):
 
         self.vbox_vcconf_params = QVBoxLayout()
         self.vbox_vcconf.addLayout(self.vbox_vcconf_params)
-        self.frame_length = CreateSpinBoxLayout("frame_length", 120, 0, 2**20)
+        self.frame_length = CreateSpinBoxLayout("frame_length", 125, 0, 2**20)
         self.vbox_vcconf_params.addLayout(self.frame_length)
-        self.delay_flames = CreateSpinBoxLayout("delay_flames", 120, 0, 2**20)
+        self.delay_flames = CreateSpinBoxLayout("delay_flames", 125, 0, 2**20)
         self.vbox_vcconf_params.addLayout(self.delay_flames)
-        self.overlap = CreateSpinBoxLayout("overlap", 120, 0, 2**20)
+        self.overlap = CreateSpinBoxLayout("overlap", 125, 0, 2**20)
         self.vbox_vcconf_params.addLayout(self.overlap)
-        self.dispose_stft_specs = CreateSpinBoxLayout("dispose_stft_specs", 120, 0, 2**20)
+        self.dispose_stft_specs = CreateSpinBoxLayout("dispose_stft_specs", 125, 0, 2**20)
         self.vbox_vcconf_params.addLayout(self.dispose_stft_specs)
-        self.dispose_conv1d_specs = CreateSpinBoxLayout("dispose_conv1d_specs", 120, 0, 2**20)
+        self.dispose_conv1d_specs = CreateSpinBoxLayout("dispose_conv1d_specs", 125, 0, 2**20)
         self.vbox_vcconf_params.addLayout(self.dispose_conv1d_specs)
 
         self.hbox_vcconf_voiceid = QHBoxLayout()
@@ -279,13 +280,13 @@ class MainWindow(QWidget):
         self.vbox_path = QVBoxLayout()
         self.groupbox_path.setLayout(self.vbox_path)
 
-        self.path_json = CreateFileOpenLayout("JSON", 40)
+        self.path_json = CreateFileOpenLayout("JSON", 40, "MMVC Config File (*.json)")
         self.vbox_path.addLayout(self.path_json, 0)
 
-        self.path_model = CreateFileOpenLayout("MODEL", 40)
+        self.path_model = CreateFileOpenLayout("MODEL", 40, "MMVC Moodel File (*.pth)")
         self.vbox_path.addLayout(self.path_model, 0)
 
-        self.path_noise = CreateFileOpenLayout("NOISE", 40)
+        self.path_noise = CreateFileOpenLayout("NOISE", 40, "Noise Sound File (*.wav)")
         self.vbox_path.addLayout(self.path_noise, 0)
 
 
@@ -393,18 +394,18 @@ class MainWindow(QWidget):
         self.btn_getdevice.repaint()
 
 
-    def OpenFile(self, caption , path):
-        update_path = QFileDialog().getOpenFileName(None, f'{caption}', f'{path}')
+    def OpenFile(self, caption , path, filter=None):
+        update_path = QFileDialog().getOpenFileName(None, f'{caption}', f'{path}', filter)
         return update_path
 
 
-    def SaveFile(self, caption , path):
-        update_path = QFileDialog().getSaveFileName(None, f'{caption}', f'{path}')
+    def SaveFile(self, caption , path, filter=None):
+        update_path = QFileDialog().getSaveFileName(None, f'{caption}', f'{path}', filter)
         return update_path
 
 
-    def SaveConfigFile(self, path, callbackfunc=None):
-        self.new_path = MainWindow.SaveFile(self, "Save configuration file", path)
+    def SaveConfigFile(self, path, callbackfunc=None, filter=None):
+        self.new_path = MainWindow.SaveFile(self, "Save configuration file", path, filter)
         #キャンセル押したら何もしない
         if len(self.new_path[0]) != 0:
             #コールバック周りが雑
